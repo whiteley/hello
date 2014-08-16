@@ -13,4 +13,4 @@ install:
   - sha256sum --check --status SHA256SUMS && mv -v hello-2.9.tar.gz ../hello_2.9.orig.tar.gz
 
 script:
-  - dpkg-buildpackage -rfakeroot -uc -us
+  - debuild -i -uc -us
