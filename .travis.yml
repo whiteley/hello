@@ -1,4 +1,11 @@
 language: c
+
 compiler:
 - clang
 - gcc
+
+before_install:
+  - sudo apt-get -qq update
+
+install:
+  - sudo apt-get -qq install packaging-dev
