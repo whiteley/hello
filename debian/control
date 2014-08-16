@@ -1,0 +1,13 @@
+Source: hello
+Section: devel
+Priority: optional
+Maintainer: Matt Whiteley <mwhiteley@engineyard.com>
+Build-Depends: debhelper (>= 9.0.0)
+Standards-Version: 3.9.4
+Homepage: http://www.gnu.org/software/hello/
+
+Package: hello
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: “Hello, world!”
+ The GNU Hello program produces a familiar, friendly greeting.
