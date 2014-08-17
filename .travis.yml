@@ -1,8 +1,8 @@
 language: c
 
 compiler:
-- clang
-- gcc
+  - clang
+  - gcc
 
 before_install:
   - sudo apt-get -qq update
@@ -15,3 +15,19 @@ install:
 script:
   - cd hello
   - debuild -i -uc -us
+
+before_deploy:
+  - mkdir ../build
+  - mv -v ../hello_2.9-0ubuntu1_amd64.deb ../build
+
+deploy:
+  provider: s3
+  access_key_id: AKIAJZ6H5CF5KNK6W7LQ
+  secret_access_key:
+    secure: MQ/peiLnmy6Z0j+jpU8ZzSpqi6njC22r4l7mHO8SmxfjyoVSDhzvIj71x9P7F+9vtxGQfH2ZpyirSXEMowxoWvVfiqrDAutp16xyGBUmbpjQdkpQHB4lBQXWoPL7otetQf3BjDJ7kbO1iGwvdbhciIYAYLvIt4MJU1ZBp33sKPU=
+  bucket: s3pa-mwhiteley-hello
+  acl: !ruby/string:HighLine::String public_read
+  on:
+    repo: whiteley/hello
+  skip_cleanup: true
+  local-dir: ../build
