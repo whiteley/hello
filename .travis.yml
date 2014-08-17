@@ -1,8 +1,15 @@
+env:
+  global:
+    - secure: "SVMOUmFKgDeaMNGfr4a4R7KuSoZdm312ysXHBwIlLVcq+Wg3vJB1CB+TZZXKTJYP+czWDb87Ma5GHbN+zfSSoTMGhG1MNGanyIuHcRalDzSqBDgsPukVR6RoMr//66MRgu+7uke/aDt8VrPNY1JzyL7MCkFsTqoCWBnc2t0hHbM="
+    - secure: "AqyAyYlphHeAimee+xCyiRBP8qq8243si5/Zs24HOEqs5ZxF2BmitdRmPQw4CFCGX3K/PwO2Bt/2eehJPG5IQi0telYzPWCGPD9Q2B+AG45NVzuzzaHWCHVvO4h9lZly0WXK1ox38IsneMDoh1WumMfatV0MKH/x7jw2JGhLC40="
+
 language: c
 
-compiler:
-  - clang
-  - gcc
+compiler: clang
+
+cache:
+  - apt
+  - bundler
 
 before_install:
   - sudo apt-get -qq update
@@ -13,21 +20,10 @@ install:
   - sha256sum --check --status SHA256SUMS && mv -v hello-2.9.tar.gz hello_2.9.orig.tar.gz
 
 script:
-  - cd hello
+  - pushd hello
   - debuild -i -uc -us
+  - popd
 
-before_deploy:
-  - mkdir ../build
-  - mv -v ../hello_2.9-0ubuntu1_amd64.deb ../build
-
-deploy:
-  provider: s3
-  access_key_id: AKIAJZ6H5CF5KNK6W7LQ
-  secret_access_key:
-    secure: MQ/peiLnmy6Z0j+jpU8ZzSpqi6njC22r4l7mHO8SmxfjyoVSDhzvIj71x9P7F+9vtxGQfH2ZpyirSXEMowxoWvVfiqrDAutp16xyGBUmbpjQdkpQHB4lBQXWoPL7otetQf3BjDJ7kbO1iGwvdbhciIYAYLvIt4MJU1ZBp33sKPU=
-  bucket: s3pa-mwhiteley-hello
-  acl: !ruby/string:HighLine::String public_read
-  on:
-    repo: whiteley/hello
-  skip_cleanup: true
-  local-dir: ../build
+after_success:
+  - gem install deb-s3
+  - deb-s3 upload --arch=amd64 --bucket=s3pa-mwhiteley-hello --codename=precise --access-key-id=${AWS_ACCESS_KEY_ID} --secret-access-key=${AWS_SECRET_ACCESS_KEY} --visibility=public hello_2.9-0ubuntu1_amd64.deb
