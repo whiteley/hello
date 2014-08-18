@@ -5,7 +5,7 @@ env:
 
 language: c
 
-compiler: clang
+compiler: gcc
 
 cache:
   - apt
@@ -16,14 +16,15 @@ before_install:
 
 install:
   - sudo apt-get -qq install packaging-dev
+  - sudo pbuilder create --debootstrapopts --variant=buildd
   - wget http://ftp.gnu.org/gnu/hello/hello-2.9.tar.gz
   - sha256sum --check --status SHA256SUMS && mv -v hello-2.9.tar.gz hello_2.9.orig.tar.gz
 
 script:
   - pushd hello
-  - debuild -i -uc -us
+  - pdebuild --debbuildopts "-i -uc -us"
   - popd
 
 after_success:
   - gem install deb-s3
-  - deb-s3 upload --arch=amd64 --bucket=s3pa-mwhiteley-hello --codename=precise --access-key-id=${AWS_ACCESS_KEY_ID} --secret-access-key=${AWS_SECRET_ACCESS_KEY} --visibility=public hello_2.9-0ubuntu1_amd64.deb
+  - deb-s3 upload --arch=amd64 --bucket=s3pa-mwhiteley-hello --codename=precise --access-key-id=${AWS_ACCESS_KEY_ID} --secret-access-key=${AWS_SECRET_ACCESS_KEY} --visibility=public /var/cache/pbuilder/result/hello_2.9-0ubuntu1_amd64.deb
